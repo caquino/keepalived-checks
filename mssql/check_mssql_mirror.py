@@ -18,11 +18,20 @@ results = parser.parse_args()
 
 connect_host = "%s:%s" % (results.host,str(results.port))
 
+if results.verbose:
+    def verboseprint(*args):
+        for arg in args:
+           print arg,
+        print
+else:
+    verboseprint = lambda *a: None
+
+verboseprint("Connecting to %s." % connect_host)
+
 try:
     conn = pymssql.connect(user = results.user, password = results.password, host = connect_host, timeout = results.query_timeout, login_timeout = results.timeout)
 except Exception, err:
-    if results.verbose:
-        print "Error connecting to the server: %s" % str(err)
+    verboseprint("Error connecting to the server: %s" % str(err))
     exit(1)
 
 tsql_cmd = """
@@ -37,8 +46,10 @@ WHERE
     mirroring_role_desc = 'PRINCIPAL' AND
     name = '%s'
  """ % results.dbname
-
+verboseprint("Executing the query %s" % tsql_cmd)
 cur = conn.cursor()
 cur.execute(tsql_cmd)
-exit(cur.fetchone()[0])
+status = cur.fetchone()[0]
 conn.close()
+verboseprint("Received %d as result." % status)
+exit(status)
