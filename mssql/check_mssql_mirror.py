@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# cma - 2013
+# http://github.com/caquino/keepalived-checks/
 
 import argparse
 import pymssql
